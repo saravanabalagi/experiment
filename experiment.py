@@ -2,14 +2,20 @@ import os
 import re
 
 class Experiment():
-    def __init__(self, name):
-        self.name = name
-        if not os.path.exists(directory):
-            os.makedirs(exp_folder)
-        self.path = os.path.join(exp_folder)
+    def __init__(self, parent='experiments'):
+        os.makedirs(parent, exist_ok=True)
+        self.path = os.path.join(parent)
+        self.parent = parent
 
-    def new():
-        pass
+    def new(self, name=''):
+        old_number = get_last_folder_number(self.path)
+        new_number = old_number + 1
+
+        if len(name) > 0:
+            exp_folder = '{:02d}_{}'.format(new_number, name)
+        else: exp_folder = '{:02d}'.format(new_number)
+        os.makedirs(os.path.join(self.parent, exp_folder))
+        return exp_folder
 
 # All directories are files, but not all files are directories
 def get_last_file_number(path=None, prefix='', extension='', folder=False):
@@ -24,10 +30,10 @@ def get_last_file_number(path=None, prefix='', extension='', folder=False):
     matches = list(map(r.match, fs_objects))
     matches = list(filter(lambda x: x is not None, matches))
 
-    # For debugging
-    print(matches)
-    print([match.group(1) for match in matches])
-    print(list(filter(r.match, fs_objects)))
+    # # For debugging
+    # print(matches)
+    # print([match.group(1) for match in matches])
+    # print(list(filter(r.match, fs_objects)))
 
     numbers_list = [ int(match.group(1)) for match in matches ]
     return max(numbers_list) if len(numbers_list) > 0 else -1
@@ -37,8 +43,10 @@ def get_last_folder_number(path=None, prefix=''):
     return get_last_file_number(path=path, prefix=prefix, extension='', folder=True)
 
 def main():
-    print(get_last_folder_number())
-    print(get_last_file_number(extension='something'))
+    my_exp = Experiment(parent='experiments')
+    print(my_exp.new('nasnet'))
+    print(my_exp.new('vgg'))
+    print(my_exp.new('inceptionv3'))
 
 if __name__ == '__main__':
     main()
