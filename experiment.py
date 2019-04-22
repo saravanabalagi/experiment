@@ -11,24 +11,34 @@ class Experiment():
     def new():
         pass
 
-def get_last_folder_number(path=None, prefix=''):
+# All directories are files, but not all files are directories
+def get_last_file_number(path=None, prefix='', extension='', folder=False):
 
     if path is None:
         path = os.getcwd()
 
-    folders = next(os.walk(path))[1]
-    r = re.compile(prefix + '[0-9]+')
-    matches = list(map(r.match, folders))
+    index = 1 if folder else 2
+    fs_objects = next(os.walk(path))[index]
+
+    r = re.compile(prefix + '([0-9]+)' + '.*' + extension + '$')
+    matches = list(map(r.match, fs_objects))
     matches = list(filter(lambda x: x is not None, matches))
 
-    # print(matches)
-    # print(list(filter(r.match, folders)))
+    # For debugging
+    print(matches)
+    print([match.group(1) for match in matches])
+    print(list(filter(r.match, fs_objects)))
 
-    numbers_list = [ int(e[0][len(prefix):]) for e in matches ]
-    return max(numbers_list)
+    numbers_list = [ int(match.group(1)) for match in matches ]
+    return max(numbers_list) if len(numbers_list) > 0 else -1
+
+# For those files that are directories
+def get_last_folder_number(path=None, prefix=''):
+    return get_last_file_number(path=path, prefix=prefix, extension='', folder=True)
 
 def main():
-    print(get_last_folder())
+    print(get_last_folder_number())
+    print(get_last_file_number(extension='something'))
 
 if __name__ == '__main__':
     main()
