@@ -1,4 +1,4 @@
-from experiment import get_last_folder_number, get_last_file_number
+from find_utils import get_last_folder_number, get_last_file_number
 import os
 
 def test_get_last_folder_number():
